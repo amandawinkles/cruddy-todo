@@ -11,19 +11,16 @@ var items = {};
 // items[id] = text;
 // callback(null, { id, text });
 //Use the unique id to create a file path inside the dataDir
+//data type ok for writeFile?
 exports.create = (text, callback) => {
-  //var id = counter.getNextUniqueId();
   var id = counter.getNextUniqueId((err, id) => {
     if (err) {
       console.log('error', err);
     } else {
       items[id] = text;
-      // console.log("👮‍♀️", id, typeof id);
-      // console.log(text);
-      // console.log(path.join(exports.dataDir, id));
       var directory = exports.dataDir;
       console.log(`${id}.txt`);
-      var pathFinder = path.join(directory, `${id}.txt`); //data type ok for writeFile?
+      var pathFinder = path.join(directory, `${id}.txt`);
       fs.writeFile(pathFinder, text, 'utf8', (err) => {
         if (err) {
           console.log('error', err);
