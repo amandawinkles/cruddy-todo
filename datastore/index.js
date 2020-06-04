@@ -12,6 +12,7 @@ var items = {};
 // callback(null, { id, text });
 //Use the unique id to create a file path inside the dataDir
 //data type ok for writeFile?
+//counter not updating
 exports.create = (text, callback) => {
   var id = counter.getNextUniqueId((err, id) => {
     if (err) {
@@ -25,6 +26,8 @@ exports.create = (text, callback) => {
         if (err) {
           console.log('error', err);
         } else {
+          console.log("👮‍♂️", id, "�", text)
+          //update counter call getNextUniqId
           callback(null, { id, text });
         }
       });
