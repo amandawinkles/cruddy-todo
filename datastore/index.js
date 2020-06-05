@@ -88,14 +88,31 @@ exports.readOne = (id, callback) => {
   });
 };
 
-exports.update = (id, text, callback) => {
-  var item = items[id];
+/*
+var item = items[id];
   if (!item) {
     callback(new Error(`No item with id: ${id}`));
   } else {
     items[id] = text;
     callback(null, { id, text });
   }
+*/
+exports.update = (id, text, callback) => {
+  var directory = exports.dataDir;
+  var pathFinder = path.join(directory, `${id}.txt`);
+  fs.readFile(pathFinder, 'utf8', (err) => {
+    if (err) {
+      console.log('error', err);
+    } else {
+      fs.writeFile(pathFinder, text, 'utf8', (err, data) => {
+        if (err) {
+          console.log('error', err);
+        } else {
+          callback(null, { id, text });
+        }
+      });
+    }
+  });
 };
 
 exports.delete = (id, callback) => {
