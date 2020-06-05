@@ -80,9 +80,9 @@ exports.readOne = (id, callback) => {
       console.log('error', err);
       callback(err, null);
     } else {
-      console.log('👨🏼‍🎤', data);
+      //console.log('👨🏼‍🎤', data);
       text = data;
-      console.log('👞', text);
+      //console.log('👞', text);
       callback(null, { id, text });
     }
   });
