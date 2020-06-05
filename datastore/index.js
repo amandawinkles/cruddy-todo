@@ -20,13 +20,13 @@ exports.create = (text, callback) => {
     } else {
       items[id] = text;
       var directory = exports.dataDir;
-      console.log(`${id}.txt`);
+      //console.log(`${id}.txt`);
       var pathFinder = path.join(directory, `${id}.txt`);
       fs.writeFile(pathFinder, text, 'utf8', (err) => {
         if (err) {
           console.log('error', err);
         } else {
-          console.log("👮‍♂️", id, "�", text)
+          //console.log("👮‍♂️", id, "�", text);
           //update counter call getNextUniqId
           callback(null, { id, text });
         }
@@ -35,11 +35,32 @@ exports.create = (text, callback) => {
   });
 };
 
-exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
+
+/*
+var data = _.map(items, (text, id) => {
     return { id, text };
   });
   callback(null, data);
+*/
+exports.readAll = (callback) => {
+  //data = todoList
+  //return array of todos
+  fs.readdir(exports.dataDir, 'utf8', function(err, files) {
+    //console.log('〽️', text, '👮🏼‍♀️', id);
+    if (err) {
+      console.log('error', err);
+    } else {
+      //console.log('🔻', files);
+      var data = _.map(files, function(file) {
+        //console.log('🔵', file);
+        //console.log('💂🏿‍♂️', file.split('.')[0]);
+        text = file.split('.')[0];
+        id = file.split('.')[0];
+        return { id, text };
+      });
+      callback(null, data);
+    }
+  });
 };
 
 exports.readOne = (id, callback) => {

@@ -49,7 +49,7 @@ exports.getNextUniqueId = (callback) => {
       var counterZeroPad = zeroPaddedNumber(counter);
       //console.log('zeroPad', counterZeroPad);
       writeCounter(counter, function(err, data) { //do something w/data increment inside cb
-        console.log('data counter.js --->', data); //data is counter
+        //console.log('data counter.js --->', data); //data is counter
         if (err) {
           console.log('error', err);
         } else {
