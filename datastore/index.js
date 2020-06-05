@@ -63,13 +63,29 @@ exports.readAll = (callback) => {
   });
 };
 
-exports.readOne = (id, callback) => {
-  var text = items[id];
+
+/*
+var text = items[id];
   if (!text) {
     callback(new Error(`No item with id: ${id}`));
   } else {
     callback(null, { id, text });
   }
+*/
+exports.readOne = (id, callback) => {
+  var directory = exports.dataDir;
+  var pathFinder = path.join(directory, `${id}.txt`);
+  fs.readFile(pathFinder, 'utf8', function(err, data) {
+    if (err) {
+      console.log('error', err);
+      callback(err, null);
+    } else {
+      console.log('👨🏼‍🎤', data);
+      text = data;
+      console.log('👞', text);
+      callback(null, { id, text });
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
