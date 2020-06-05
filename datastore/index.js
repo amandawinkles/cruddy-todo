@@ -103,6 +103,7 @@ exports.update = (id, text, callback) => {
   fs.readFile(pathFinder, 'utf8', (err) => {
     if (err) {
       console.log('error', err);
+      callback(new Error(`No item with id: ${id}`));
     } else {
       fs.writeFile(pathFinder, text, 'utf8', (err, data) => {
         if (err) {
