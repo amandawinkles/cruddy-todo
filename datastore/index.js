@@ -1,4 +1,6 @@
 const fs = require('fs');
+const Promise = require('bluebird');
+Promise.promisifyAll(fs);
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
@@ -7,12 +9,6 @@ var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
-// var id = counter.getNextUniqueId();
-// items[id] = text;
-// callback(null, { id, text });
-//Use the unique id to create a file path inside the dataDir
-//data type ok for writeFile?
-//counter not updating
 exports.create = (text, callback) => {
   var id = counter.getNextUniqueId((err, id) => {
     if (err) {
@@ -20,14 +16,11 @@ exports.create = (text, callback) => {
     } else {
       items[id] = text;
       var directory = exports.dataDir;
-      //console.log(`${id}.txt`);
       var pathFinder = path.join(directory, `${id}.txt`);
-      fs.writeFile(pathFinder, text, 'utf8', (err) => {
+      fs.writeFile(pathFinder, text, 'utf8', (err) => { //fs.writeFileAsync.then
         if (err) {
           console.log('error', err);
         } else {
-          //console.log("👮‍♂️", id, "�", text);
-          //update counter call getNextUniqId
           callback(null, { id, text });
         }
       });
@@ -35,13 +28,33 @@ exports.create = (text, callback) => {
   });
 };
 
+exports.readAll = (callback) => {
+  fs.readdirAsync(exports.dataDir, 'utf8')
+    .then((files) => {
+      var data = _.map(files, function(file) {
+        var id = file.split('.')[0];
+        var directory = exports.dataDir;
+        var pathFinder = path.join(directory, `${id}.txt`);
+        return fs.readFileAsync(pathFinder, 'utf8')
+          .then((fileText) => { //text
+            return { id: id, text: fileText }; //{id, text}
+          })
+          .catch((err) => {
+            callback(err);
+          });
+      });
+      console.log('👙', data);
+      Promise.all(data).then((data) => {
+        console.log(data);
+        callback(null, data);
+      });
+    })
+    .catch((err) => {
+      callback(err);
+    });
+};
 
 /*
-var data = _.map(items, (text, id) => {
-    return { id, text };
-  });
-  callback(null, data);
-*/
 exports.readAll = (callback) => {
   //data = todoList
   //return array of todos
@@ -54,7 +67,7 @@ exports.readAll = (callback) => {
       var data = _.map(files, function(file) {
         //console.log('🔵', file);
         //console.log('💂🏿‍♂️', file.split('.')[0]);
-        text = file.split('.')[0];
+        //text = file.split('.')[0];
         id = file.split('.')[0];
         return { id, text };
       });
@@ -62,16 +75,8 @@ exports.readAll = (callback) => {
     }
   });
 };
-
-
-/*
-var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
 */
+
 exports.readOne = (id, callback) => {
   var directory = exports.dataDir;
   var pathFinder = path.join(directory, `${id}.txt`);
@@ -88,15 +93,6 @@ exports.readOne = (id, callback) => {
   });
 };
 
-/*
-var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
-*/
 exports.update = (id, text, callback) => {
   var directory = exports.dataDir;
   var pathFinder = path.join(directory, `${id}.txt`);
@@ -117,16 +113,6 @@ exports.update = (id, text, callback) => {
   });
 };
 
-/*
-var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
-*/
 exports.delete = (id, callback) => {
   var directory = exports.dataDir;
   var pathFinder = path.join(directory, `${id}.txt`);
