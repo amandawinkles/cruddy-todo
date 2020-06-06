@@ -103,7 +103,8 @@ exports.update = (id, text, callback) => {
   fs.readFile(pathFinder, 'utf8', (err) => {
     if (err) {
       console.log('error', err);
-      callback(new Error(`No item with id: ${id}`));
+      callback(err);
+      //callback(new Error(`No item with id: ${id}`));
     } else {
       fs.writeFile(pathFinder, text, 'utf8', (err, data) => {
         if (err) {
@@ -116,8 +117,8 @@ exports.update = (id, text, callback) => {
   });
 };
 
-exports.delete = (id, callback) => {
-  var item = items[id];
+/*
+var item = items[id];
   delete items[id];
   if (!item) {
     // report an error if item not found
@@ -125,6 +126,18 @@ exports.delete = (id, callback) => {
   } else {
     callback();
   }
+*/
+exports.delete = (id, callback) => {
+  var directory = exports.dataDir;
+  var pathFinder = path.join(directory, `${id}.txt`);
+  fs.unlink(pathFinder, (err) => {
+    if (err) {
+      callback(err);
+    } else {
+      console.log('🧶', `${pathFinder} was deleted`);
+      callback(null, undefined);
+    }
+  });
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
